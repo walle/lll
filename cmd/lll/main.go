@@ -12,11 +12,11 @@ import (
 )
 
 var args struct {
-	MaxLength int      `arg:"-l,help:max line length to check for"`
-	GoOnly    bool     `arg:"-g,help:only check .go files"`
+	MaxLength int      `arg:"-l,env,help:max line length to check for"`
+	GoOnly    bool     `arg:"-g,env,help:only check .go files"`
 	Input     string   `arg:"positional"`
-	SkipList  []string `arg:"-s,help:list of dirs to skip [default: .git vendor]"`
-	Vendor    bool     `arg:"help:check files in vendor directory"`
+	SkipList  []string `arg:"-s,env,help:list of dirs to skip [default: .git vendor]"`
+	Vendor    bool     `arg:"env,help:check files in vendor directory"`
 	Files     bool     `arg:"help:read file names from stdin one at each line"`
 }
 
