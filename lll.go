@@ -77,7 +77,7 @@ func Process(r io.Reader, w io.Writer, path string, maxLength int) error {
 	for s.Scan() {
 		c := utf8.RuneCountInString(s.Text())
 		if c > maxLength {
-			fmt.Fprintf(w, "%s:%d error: line is %d characters\n", path, l, c)
+			fmt.Fprintf(w, "%s:%d warning: line is %d characters\n", path, l, c)
 		}
 		l++
 	}

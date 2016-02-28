@@ -50,7 +50,7 @@ func TestProcess(t *testing.T) {
 		t.Errorf("Expected %s, got %s", nil, err)
 	}
 
-	expected := "file:3 error: line is 4 characters\n"
+	expected := "file:3 warning: line is 4 characters\n"
 	_ = lll.Process(bytes.NewBufferString(lines), b, "file", 3)
 	if b.String() != expected {
 		t.Errorf("Expected %s, got %s", expected, b.String())
@@ -68,7 +68,7 @@ func TestProcessFile(t *testing.T) {
 func TestProcessUnicode(t *testing.T) {
 	lines := "日本語\n"
 	b := bytes.NewBufferString("")
-	expected := "file:1 error: line is 3 characters\n"
+	expected := "file:1 warning: line is 3 characters\n"
 	_ = lll.Process(bytes.NewBufferString(lines), b, "file", 2)
 	if b.String() != expected {
 		t.Errorf("Expected %s, got %s", expected, b.String())
