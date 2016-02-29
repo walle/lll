@@ -18,8 +18,8 @@ $ go get github.com/walle/lll/...
 ## Usage
 
 ```shell
-usage: lll [--maxlength MAXLENGTH] [--goonly] [--skiplist SKIPLIST] [--vendor]
-[--files] INPUT
+usage: lll [--maxlength MAXLENGTH] [--goonly] [--skiplist SKIPLIST] [--vendor] 
+[--files] [INPUT [INPUT ...]]
 
 positional arguments:
   input
@@ -36,7 +36,10 @@ options:
 ```
 
 Example usage to check only go files for lines more than 100 characters.
-`lll -l 100 -g path/to/myproject`
+`lll -l 100 -g path/to/myproject`.
+
+You can also define the flags using environment variables, eg. 
+`MAXLENGTH=100 GOONLY=true lll path/to/my/project`.
 
 ## Testing
 
