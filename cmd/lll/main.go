@@ -14,17 +14,40 @@ import (
 var args struct {
 	MaxLength int      `arg:"-l,env,help:max line length to check for"`
 	GoOnly    bool     `arg:"-g,env,help:only check .go files"`
-	Input     string   `arg:"positional"`
+	Input     []string `arg:"positional"`
 	SkipList  []string `arg:"-s,env,help:list of dirs to skip [default: .git vendor]"`
 	Vendor    bool     `arg:"env,help:check files in vendor directory"`
 	Files     bool     `arg:"help:read file names from stdin one at each line"`
 }
 
 func main() {
-	args.Input = "./"
 	args.MaxLength = 80
-	args.SkipList = []string{".git", "vendor"}
 	arg.MustParse(&args)
+
+	// Set default input dir if not set
+	if len(args.Input) == 0 {
+		args.Input = []string{"./"}
+	}
+
+	// Set default skip list if not set
+	if len(args.SkipList) == 0 {
+		useDefault := true
+		for _, v := range os.Args {
+			if v == "-s" || v == "--skiplist" {
+				useDefault = false
+				break
+			}
+		}
+
+		_, isSet := os.LookupEnv("SKIPLIST")
+		if isSet {
+			useDefault = false
+		}
+
+		if useDefault {
+			args.SkipList = []string{".git", "vendor"}
+		}
+	}
 
 	// If we should include the vendor dir, attempt to remove it from the skip list
 	if args.Vendor {
@@ -47,19 +70,21 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Otherwise, walk the input dir recursively
-	err := filepath.Walk(args.Input, func(p string, i os.FileInfo, e error) error {
-		skip, ret := lll.ShouldSkip(p, i.IsDir(), e, args.SkipList, args.GoOnly)
-		if skip {
-			return ret
+	// Otherwise, walk the inputs recursively
+	for _, d := range args.Input {
+		err := filepath.Walk(d, func(p string, i os.FileInfo, e error) error {
+			skip, ret := lll.ShouldSkip(p, i.IsDir(), e, args.SkipList, args.GoOnly)
+			if skip {
+				return ret
+			}
+
+			err := lll.ProcessFile(os.Stdout, p, args.MaxLength)
+			return err
+		})
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error walking the file system: %s\n", err)
+			os.Exit(1)
 		}
-
-		err := lll.ProcessFile(os.Stdout, p, args.MaxLength)
-		return err
-	})
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error walking the file system: %s\n", err)
-		os.Exit(1)
 	}
 }
