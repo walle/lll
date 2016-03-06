@@ -15,39 +15,15 @@ var args struct {
 	MaxLength int      `arg:"-l,env,help:max line length to check for"`
 	GoOnly    bool     `arg:"-g,env,help:only check .go files"`
 	Input     []string `arg:"positional"`
-	SkipList  []string `arg:"-s,env,help:list of dirs to skip [default: .git vendor]"`
+	SkipList  []string `arg:"-s,env,help:list of dirs to skip"`
 	Vendor    bool     `arg:"env,help:check files in vendor directory"`
 	Files     bool     `arg:"help:read file names from stdin one at each line"`
 }
 
 func main() {
 	args.MaxLength = 80
+	args.SkipList = []string{".git", "vendor"}
 	arg.MustParse(&args)
-
-	// Set default input dir if not set
-	if len(args.Input) == 0 {
-		args.Input = []string{"./"}
-	}
-
-	// Set default skip list if not set
-	if len(args.SkipList) == 0 {
-		useDefault := true
-		for _, v := range os.Args {
-			if v == "-s" || v == "--skiplist" {
-				useDefault = false
-				break
-			}
-		}
-
-		_, isSet := os.LookupEnv("SKIPLIST")
-		if isSet {
-			useDefault = false
-		}
-
-		if useDefault {
-			args.SkipList = []string{".git", "vendor"}
-		}
-	}
 
 	// If we should include the vendor dir, attempt to remove it from the skip list
 	if args.Vendor {
