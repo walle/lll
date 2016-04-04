@@ -54,7 +54,7 @@ func ShouldSkip(path string, isDir bool, err error,
 
 // ProcessFile checks all lines in the file and writes an error if the line
 // length is greater than MaxLength.
-func ProcessFile(w io.Writer, path string, maxLength int) error {
+func ProcessFile(w io.Writer, path string, maxLength int, exclude string) error {
 	f, err := os.Open(path)
 	if err != nil {
 		return err
@@ -66,16 +66,20 @@ func ProcessFile(w io.Writer, path string, maxLength int) error {
 		}
 	}()
 
-	return Process(f, w, path, maxLength)
+	return Process(f, w, path, maxLength, exclude)
 }
 
 // Process checks all lines in the reader and writes an error if the line length
 // is greater than MaxLength.
-func Process(r io.Reader, w io.Writer, path string, maxLength int) error {
+func Process(r io.Reader, w io.Writer, path string, maxLength int, exclude string) error {
 	l := 1
 	s := bufio.NewScanner(r)
 	for s.Scan() {
-		c := utf8.RuneCountInString(s.Text())
+		t := s.Text()
+		if len(exclude) != 0 && strings.Contains(t, exclude) {
+			continue
+		}
+		c := utf8.RuneCountInString(t)
 		if c > maxLength {
 			fmt.Fprintf(w, "%s:%d: line is %d characters\n", path, l, c)
 		}
