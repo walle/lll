@@ -18,6 +18,7 @@ var args struct {
 	SkipList  []string `arg:"-s,env,help:list of dirs to skip"`
 	Vendor    bool     `arg:"env,help:check files in vendor directory"`
 	Files     bool     `arg:"help:read file names from stdin one at each line"`
+	Exclude     string     `arg:"env,help:exclude lines with this substring"`
 }
 
 func main() {
@@ -38,7 +39,7 @@ func main() {
 	if args.Files {
 		s := bufio.NewScanner(os.Stdin)
 		for s.Scan() {
-			err := lll.ProcessFile(os.Stdout, s.Text(), args.MaxLength)
+			err := lll.ProcessFile(os.Stdout, s.Text(), args.MaxLength, args.Exclude)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error processing file: %s\n", err)
 			}
@@ -49,12 +50,16 @@ func main() {
 	// Otherwise, walk the inputs recursively
 	for _, d := range args.Input {
 		err := filepath.Walk(d, func(p string, i os.FileInfo, e error) error {
+			if e != nil {
+				return e
+			}
+
 			skip, ret := lll.ShouldSkip(p, i.IsDir(), e, args.SkipList, args.GoOnly)
 			if skip {
 				return ret
 			}
 
-			err := lll.ProcessFile(os.Stdout, p, args.MaxLength)
+			err := lll.ProcessFile(os.Stdout, p, args.MaxLength, args.Exclude)
 			return err
 		})
 
