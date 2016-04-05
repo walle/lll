@@ -49,7 +49,15 @@ func main() {
 	// Otherwise, walk the inputs recursively
 	for _, d := range args.Input {
 		err := filepath.Walk(d, func(p string, i os.FileInfo, e error) error {
-			skip, ret := lll.ShouldSkip(p, i.IsDir(), e, args.SkipList, args.GoOnly)
+			if i == nil {
+				fmt.Fprintf(os.Stderr, "lll: %s no such file or directory\n", p)
+				return nil
+			}
+			if e != nil {
+				fmt.Fprintf(os.Stderr, "lll: %s\n", e)
+				return nil
+			}
+			skip, ret := lll.ShouldSkip(p, i.IsDir(), args.SkipList, args.GoOnly)
 			if skip {
 				return ret
 			}

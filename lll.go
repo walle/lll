@@ -18,8 +18,8 @@ import (
 // All directories are skipped, only files are processed.
 // If GoOnly is supplied check that the file is a go file.
 // Otherwise check so the file is a "text file".
-func ShouldSkip(path string, isDir bool, err error,
-	skipList []string, goOnly bool) (bool, error) {
+func ShouldSkip(path string, isDir bool, skipList []string,
+	goOnly bool) (bool, error) {
 
 	name := filepath.Base(path)
 	for _, d := range skipList {
@@ -30,7 +30,7 @@ func ShouldSkip(path string, isDir bool, err error,
 			return true, nil
 		}
 	}
-	if isDir || err != nil {
+	if isDir {
 		return true, nil
 	}
 
