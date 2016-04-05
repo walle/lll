@@ -3,6 +3,7 @@ package lll_test
 import (
 	"bytes"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	"github.com/walle/lll"
@@ -45,13 +46,13 @@ func TestShouldSkipFiles(t *testing.T) {
 func TestProcess(t *testing.T) {
 	lines := "one\ntwo\ntree"
 	b := bytes.NewBufferString("")
-	err := lll.Process(bytes.NewBufferString(lines), b, "file", 80)
+	err := lll.Process(bytes.NewBufferString(lines), b, "file", 80, nil)
 	if err != nil {
 		t.Errorf("Expected %s, got %s", nil, err)
 	}
 
 	expected := "file:3: line is 4 characters\n"
-	_ = lll.Process(bytes.NewBufferString(lines), b, "file", 3)
+	_ = lll.Process(bytes.NewBufferString(lines), b, "file", 3, nil)
 	if b.String() != expected {
 		t.Errorf("Expected %s, got %s", expected, b.String())
 	}
@@ -59,7 +60,7 @@ func TestProcess(t *testing.T) {
 
 func TestProcessFile(t *testing.T) {
 	b := bytes.NewBufferString("")
-	err := lll.ProcessFile(b, "lll_test.go", 80)
+	err := lll.ProcessFile(b, "lll_test.go", 80, nil)
 	if err != nil {
 		t.Errorf("Expected %s, got %s", nil, err)
 	}
@@ -69,7 +70,18 @@ func TestProcessUnicode(t *testing.T) {
 	lines := "日本語\n"
 	b := bytes.NewBufferString("")
 	expected := "file:1: line is 3 characters\n"
-	_ = lll.Process(bytes.NewBufferString(lines), b, "file", 2)
+	_ = lll.Process(bytes.NewBufferString(lines), b, "file", 2, nil)
+	if b.String() != expected {
+		t.Errorf("Expected %s, got %s", expected, b.String())
+	}
+}
+
+func TestProcessExclude(t *testing.T) {
+	lines := "one\ntwo\ntree\nTODO: fix\nFIXME: do this"
+	b := bytes.NewBufferString("")
+	exclude := regexp.MustCompile("TODO|FIXME")
+	expected := "file:3: line is 4 characters\n"
+	_ = lll.Process(bytes.NewBufferString(lines), b, "file", 3, exclude)
 	if b.String() != expected {
 		t.Errorf("Expected %s, got %s", expected, b.String())
 	}

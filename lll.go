@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"unicode/utf8"
 )
@@ -54,7 +55,8 @@ func ShouldSkip(path string, isDir bool, skipList []string,
 
 // ProcessFile checks all lines in the file and writes an error if the line
 // length is greater than MaxLength.
-func ProcessFile(w io.Writer, path string, maxLength int) error {
+func ProcessFile(w io.Writer, path string, maxLength int,
+	exclude *regexp.Regexp) error {
 	f, err := os.Open(path)
 	if err != nil {
 		return err
@@ -66,16 +68,23 @@ func ProcessFile(w io.Writer, path string, maxLength int) error {
 		}
 	}()
 
-	return Process(f, w, path, maxLength)
+	return Process(f, w, path, maxLength, exclude)
 }
 
 // Process checks all lines in the reader and writes an error if the line length
 // is greater than MaxLength.
-func Process(r io.Reader, w io.Writer, path string, maxLength int) error {
+func Process(r io.Reader, w io.Writer, path string, maxLength int,
+	exclude *regexp.Regexp) error {
 	l := 1
 	s := bufio.NewScanner(r)
 	for s.Scan() {
-		c := utf8.RuneCountInString(s.Text())
+		t := s.Text()
+		if exclude != nil {
+			if exclude.MatchString(t) {
+				continue
+			}
+		}
+		c := utf8.RuneCountInString(t)
 		if c > maxLength {
 			fmt.Fprintf(w, "%s:%d: line is %d characters\n", path, l, c)
 		}

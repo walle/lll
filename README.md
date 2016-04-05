@@ -18,8 +18,7 @@ $ go get github.com/walle/lll/...
 ## Usage
 
 ```shell
-usage: lll [--maxlength MAXLENGTH] [--goonly] [--skiplist SKIPLIST] [--vendor] 
-[--files] [INPUT [INPUT ...]]
+usage: lll [--maxlength MAXLENGTH] [--goonly] [--skiplist SKIPLIST] [--vendor] [--files] [--exclude EXCLUDE] [INPUT [INPUT ...]]
 
 positional arguments:
   input
@@ -29,14 +28,17 @@ options:
                          max line length to check for [default: 80]
   --goonly, -g           only check .go files
   --skiplist SKIPLIST, -s SKIPLIST
-                         list of dirs to skip [default: .git vendor]
+                         list of dirs to skip [default: [.git vendor]]
   --vendor               check files in vendor directory
   --files                read file names from stdin one at each line
+  --exclude EXCLUDE, -e EXCLUDE
+                         exclude lines that matches this regex
   --help, -h             display this help and exit
 ```
 
 Example usage to check only go files for lines more than 100 characters.
-`lll -l 100 -g path/to/myproject`.
+Excluding lines that contain the words TODO or FIXME.
+`lll -l 100 -g -e "TODO|FIXME" path/to/myproject`.
 
 You can also define the flags using environment variables, eg. 
 `MAXLENGTH=100 GOONLY=true lll path/to/my/project`.

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/alexflint/go-arg"
 
@@ -18,12 +19,23 @@ var args struct {
 	SkipList  []string `arg:"-s,env,help:list of dirs to skip"`
 	Vendor    bool     `arg:"env,help:check files in vendor directory"`
 	Files     bool     `arg:"help:read file names from stdin one at each line"`
+	Exclude   string   `arg:"-e,env,help:exclude lines that matches this regex"`
 }
 
 func main() {
 	args.MaxLength = 80
 	args.SkipList = []string{".git", "vendor"}
 	arg.MustParse(&args)
+
+	var exclude *regexp.Regexp
+	if args.Exclude != "" {
+		e, err := regexp.Compile(args.Exclude)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error compiling exclude regexp: %s\n", err)
+			os.Exit(1)
+		}
+		exclude = e
+	}
 
 	// If we should include the vendor dir, attempt to remove it from the skip list
 	if args.Vendor {
@@ -38,7 +50,7 @@ func main() {
 	if args.Files {
 		s := bufio.NewScanner(os.Stdin)
 		for s.Scan() {
-			err := lll.ProcessFile(os.Stdout, s.Text(), args.MaxLength)
+			err := lll.ProcessFile(os.Stdout, s.Text(), args.MaxLength, exclude)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error processing file: %s\n", err)
 			}
@@ -62,7 +74,7 @@ func main() {
 				return ret
 			}
 
-			err := lll.ProcessFile(os.Stdout, p, args.MaxLength)
+			err := lll.ProcessFile(os.Stdout, p, args.MaxLength, exclude)
 			return err
 		})
 
