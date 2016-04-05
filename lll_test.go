@@ -86,3 +86,17 @@ func TestProcessExclude(t *testing.T) {
 		t.Errorf("Expected %s, got %s", expected, b.String())
 	}
 }
+
+func BenchmarkProcessExclude(b *testing.B) {
+	lines := "one\ntwo\ntree\nTODO: fix\nFIXME: do this"
+	exclude := regexp.MustCompile("TODO|FIXME")
+	expected := "file:3: line is 4 characters\n"
+
+	for i := 0; i < b.N; i++ {
+		buf := bytes.NewBufferString("")
+		_ = lll.Process(bytes.NewBufferString(lines), buf, "file", 3, exclude)
+		if buf.String() != expected {
+			b.Errorf("Expected %s, got %s", expected, buf.String())
+		}
+	}
+}

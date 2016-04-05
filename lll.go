@@ -79,13 +79,13 @@ func Process(r io.Reader, w io.Writer, path string, maxLength int,
 	s := bufio.NewScanner(r)
 	for s.Scan() {
 		t := s.Text()
-		if exclude != nil {
-			if exclude.MatchString(t) {
-				continue
-			}
-		}
 		c := utf8.RuneCountInString(t)
 		if c > maxLength {
+			if exclude != nil {
+				if exclude.MatchString(t) {
+					continue
+				}
+			}
 			fmt.Fprintf(w, "%s:%d: line is %d characters\n", path, l, c)
 		}
 		l++
