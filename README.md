@@ -18,7 +18,7 @@ $ go get github.com/walle/lll/...
 ## Usage
 
 ```shell
-usage: lll [--maxlength MAXLENGTH] [--goonly] [--skiplist SKIPLIST] [--vendor] [--files] [--exclude EXCLUDE] [INPUT [INPUT ...]]
+usage: lll [--maxlength MAXLENGTH] [--tabwidth TABWIDTH] [--goonly] [--skiplist SKIPLIST] [--vendor] [--files] [--exclude EXCLUDE] [INPUT [INPUT ...]]
 
 positional arguments:
   input
@@ -26,6 +26,8 @@ positional arguments:
 options:
   --maxlength MAXLENGTH, -l MAXLENGTH
                          max line length to check for [default: 80]
+  --tabwidth TABWIDTH, -w TABWIDTH
+                         tab width in spaces [default: 1]
   --goonly, -g           only check .go files
   --skiplist SKIPLIST, -s SKIPLIST
                          list of dirs to skip [default: [.git vendor]]

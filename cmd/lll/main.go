@@ -14,6 +14,7 @@ import (
 
 var args struct {
 	MaxLength int      `arg:"-l,env,help:max line length to check for"`
+	TabWidth  int      `arg:"-w,env,help:tab width in spaces"`
 	GoOnly    bool     `arg:"-g,env,help:only check .go files"`
 	Input     []string `arg:"positional"`
 	SkipList  []string `arg:"-s,env,help:list of dirs to skip"`
@@ -24,6 +25,7 @@ var args struct {
 
 func main() {
 	args.MaxLength = 80
+	args.TabWidth = 1
 	args.SkipList = []string{".git", "vendor"}
 	arg.MustParse(&args)
 
@@ -50,7 +52,7 @@ func main() {
 	if args.Files {
 		s := bufio.NewScanner(os.Stdin)
 		for s.Scan() {
-			err := lll.ProcessFile(os.Stdout, s.Text(), args.MaxLength, exclude)
+			err := lll.ProcessFile(os.Stdout, s.Text(), args.MaxLength, args.TabWidth, exclude)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error processing file: %s\n", err)
 			}
@@ -74,7 +76,7 @@ func main() {
 				return ret
 			}
 
-			err := lll.ProcessFile(os.Stdout, p, args.MaxLength, exclude)
+			err := lll.ProcessFile(os.Stdout, p, args.MaxLength, args.TabWidth, exclude)
 			return err
 		})
 
