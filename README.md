@@ -2,7 +2,7 @@
 [![Coverage](https://img.shields.io/codecov/c/github/walle/lll.svg?style=flat)](https://codecov.io/github/walle/lll)
 [![Godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/walle/lll)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/walle/lll/master/LICENSE)
-[![Go Report Card](http://goreportcard.com/badge/walle/lll?t=3)](http:/goreportcard.com/report/walle/lll)
+[![Go Report Card](https://goreportcard.com/badge/github.com/walle/lll)](http:/goreportcard.com/report/walle/lll)
 
 # lll
 
