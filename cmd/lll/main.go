@@ -52,7 +52,8 @@ func main() {
 	if args.Files {
 		s := bufio.NewScanner(os.Stdin)
 		for s.Scan() {
-			err := lll.ProcessFile(os.Stdout, s.Text(), args.MaxLength, args.TabWidth, exclude)
+			err := lll.ProcessFile(os.Stdout, s.Text(),
+				args.MaxLength, args.TabWidth, exclude)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error processing file: %s\n", err)
 			}

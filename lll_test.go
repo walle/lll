@@ -77,7 +77,8 @@ func TestProcessUnicode(t *testing.T) {
 }
 
 func TestProcessWithTabwidth4(t *testing.T) {
-	lines := "\t\t\terr := lll.ProcessFile(os.Stdout, s.Text(), args.MaxLength, args.TabWidth, exclude)"
+	lines := "\t\t\terr := lll.ProcessFile(os.Stdout, s.Text(), " +
+		"args.MaxLength, args.TabWidth, exclude)"
 	b := bytes.NewBufferString("")
 	expected := "file:1: line is 95 characters\n"
 	_ = lll.Process(bytes.NewBufferString(lines), b, "file", 80, 4, nil)
@@ -87,7 +88,8 @@ func TestProcessWithTabwidth4(t *testing.T) {
 }
 
 func TestProcessWithTabwidth8(t *testing.T) {
-	lines := "\t\t\terr := lll.ProcessFile(os.Stdout, s.Text(), args.MaxLength, args.TabWidth, exclude)"
+	lines := "\t\t\terr := lll.ProcessFile(os.Stdout, s.Text(), " +
+		"args.MaxLength, args.TabWidth, exclude)"
 	b := bytes.NewBufferString("")
 	expected := "file:1: line is 107 characters\n"
 	_ = lll.Process(bytes.NewBufferString(lines), b, "file", 80, 8, nil)
