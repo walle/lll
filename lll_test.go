@@ -22,12 +22,12 @@ func TestShouldSkipDirs(t *testing.T) {
 }
 
 func TestShouldSkipFiles(t *testing.T) {
-	skip, ret := lll.ShouldSkip("file.go", false, []string{".git"}, true)
+	skip, ret := lll.ShouldSkip("lll.go", false, []string{".git"}, true)
 	if skip == true || ret != nil {
 		t.Errorf("Expected %b, %s got. %b, %s", false, nil, skip, ret)
 	}
 
-	skip, ret = lll.ShouldSkip("file", false, []string{".git"}, true)
+	skip, ret = lll.ShouldSkip("README.md", false, []string{".git"}, true)
 	if skip == false || ret != nil {
 		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
 	}
@@ -38,6 +38,11 @@ func TestShouldSkipFiles(t *testing.T) {
 	}
 
 	skip, ret = lll.ShouldSkip("file", false, []string{"file"}, false)
+	if skip == false || ret != nil {
+		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
+	}
+
+	skip, ret = lll.ShouldSkip("generated_test.go", false, []string{".git"}, true)
 	if skip == false || ret != nil {
 		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
 	}
