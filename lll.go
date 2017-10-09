@@ -3,6 +3,7 @@ package lll
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -12,6 +13,11 @@ import (
 	"regexp"
 	"strings"
 	"unicode/utf8"
+)
+
+var (
+	genHdr = []byte("// Code generated ")
+	genFtr = []byte(" DO NOT EDIT.")
 )
 
 // ShouldSkip checks the input and determines if the path should be skipped.
@@ -35,21 +41,22 @@ func ShouldSkip(path string, isDir bool, skipList []string,
 		return true, nil
 	}
 
-	if goOnly {
-		if !strings.HasSuffix(path, ".go") {
-			return true, nil
-		}
-	} else {
-		b, err := ioutil.ReadFile(path)
-		if err != nil {
-			return true, err
-		}
-		m := http.DetectContentType(b)
-		if !strings.Contains(m, "text/") {
-			return true, nil
-		}
-	}
+	isGo := strings.HasSuffix(path, ".go")
 
+	if goOnly && !isGo {
+		return true, nil
+	}
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return true, err
+	}
+	if isGo {
+		return isGenerated(b), nil
+	}
+	m := http.DetectContentType(b)
+	if !strings.Contains(m, "text/") {
+		return true, nil
+	}
 	return false, nil
 }
 
@@ -98,4 +105,17 @@ func Process(r io.Reader, w io.Writer, path string, maxLength, tabWidth int,
 	}
 
 	return nil
+}
+
+// isGenerated reports whether the source file is generated code
+// according the rules from https://golang.org/s/generatedcode.
+func isGenerated(src []byte) bool {
+	sc := bufio.NewScanner(bytes.NewReader(src))
+	for sc.Scan() {
+		b := sc.Bytes()
+		if bytes.HasPrefix(b, genHdr) && bytes.HasSuffix(b, genFtr) && len(b) >= len(genHdr)+len(genFtr) {
+			return true
+		}
+	}
+	return false
 }
