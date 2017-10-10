@@ -2,6 +2,7 @@ package lll_test
 
 import (
 	"bytes"
+	"os"
 	"path/filepath"
 	"regexp"
 	"testing"
@@ -32,6 +33,11 @@ func TestShouldSkipFiles(t *testing.T) {
 		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
 	}
 
+	skip, ret = lll.ShouldSkip("README.md", false, []string{".git"}, false)
+	if skip == true || ret != nil {
+		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
+	}
+
 	skip, ret = lll.ShouldSkip("lll_test.go", false, []string{".git"}, false)
 	if skip == true || ret != nil {
 		t.Errorf("Expected %t, %v got. %t, %s", false, nil, skip, ret)
@@ -40,6 +46,17 @@ func TestShouldSkipFiles(t *testing.T) {
 	skip, ret = lll.ShouldSkip("file", false, []string{"file"}, false)
 	if skip == false || ret != nil {
 		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
+	}
+
+	skip, ret = lll.ShouldSkip("file", false, []string{}, false)
+	if skip == false || ret == nil {
+		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
+	}
+
+	binaryFilePath, _ := os.Executable()
+	skip, ret = lll.ShouldSkip(binaryFilePath, false, []string{".git"}, false)
+	if skip == false || ret != nil {
+		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
 	}
 
 	skip, ret = lll.ShouldSkip("generated_test.go", false, []string{".git"}, true)
