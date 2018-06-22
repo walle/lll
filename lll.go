@@ -76,9 +76,10 @@ func ProcessFile(w io.Writer, path string, maxLength, tabWidth int,
 func Process(r io.Reader, w io.Writer, path string, maxLength, tabWidth int,
 	exclude *regexp.Regexp) error {
 	spaces := strings.Repeat(" ", tabWidth)
-	l := 1
+	l := 0
 	s := bufio.NewScanner(r)
 	for s.Scan() {
+		l++
 		t := s.Text()
 		t = strings.Replace(t, "\t", spaces, -1)
 		c := utf8.RuneCountInString(t)
@@ -90,7 +91,6 @@ func Process(r io.Reader, w io.Writer, path string, maxLength, tabWidth int,
 			}
 			fmt.Fprintf(w, "%s:%d: line is %d characters\n", path, l, c)
 		}
-		l++
 	}
 
 	if err := s.Err(); err != nil {
