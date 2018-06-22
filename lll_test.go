@@ -99,10 +99,10 @@ func TestProcessWithTabwidth8(t *testing.T) {
 }
 
 func TestProcessExclude(t *testing.T) {
-	lines := "one\ntwo\ntree\nTODO: fix\nFIXME: do this"
+	lines := "one\ntwo\nTODO: fix\ntree\nFIXME: do this"
 	b := bytes.NewBufferString("")
 	exclude := regexp.MustCompile("TODO|FIXME")
-	expected := "file:3: line is 4 characters\n"
+	expected := "file:4: line is 4 characters\n"
 	_ = lll.Process(bytes.NewBufferString(lines), b, "file", 3, 1, exclude)
 	if b.String() != expected {
 		t.Errorf("Expected %s, got %s", expected, b.String())
