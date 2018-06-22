@@ -12,34 +12,34 @@ import (
 func TestShouldSkipDirs(t *testing.T) {
 	skip, ret := lll.ShouldSkip(".git", true, []string{".git"}, false)
 	if skip == false || ret != filepath.SkipDir {
-		t.Errorf("Expected %b, %s got. %b, %s", true, filepath.SkipDir, skip, ret)
+		t.Errorf("Expected %t, %s got. %t, %s", true, filepath.SkipDir, skip, ret)
 	}
 
 	skip, ret = lll.ShouldSkip("dir", true, []string{".git"}, false)
 	if skip == false || ret != nil {
-		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
 	}
 }
 
 func TestShouldSkipFiles(t *testing.T) {
 	skip, ret := lll.ShouldSkip("file.go", false, []string{".git"}, true)
 	if skip == true || ret != nil {
-		t.Errorf("Expected %b, %s got. %b, %s", false, nil, skip, ret)
+		t.Errorf("Expected %t, %v got. %t, %s", false, nil, skip, ret)
 	}
 
 	skip, ret = lll.ShouldSkip("file", false, []string{".git"}, true)
 	if skip == false || ret != nil {
-		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
 	}
 
 	skip, ret = lll.ShouldSkip("lll_test.go", false, []string{".git"}, false)
 	if skip == true || ret != nil {
-		t.Errorf("Expected %b, %s got. %b, %s", false, nil, skip, ret)
+		t.Errorf("Expected %t, %v got. %t, %s", false, nil, skip, ret)
 	}
 
 	skip, ret = lll.ShouldSkip("file", false, []string{"file"}, false)
 	if skip == false || ret != nil {
-		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
 	}
 }
 
@@ -48,7 +48,7 @@ func TestProcess(t *testing.T) {
 	b := bytes.NewBufferString("")
 	err := lll.Process(bytes.NewBufferString(lines), b, "file", 80, 1, nil)
 	if err != nil {
-		t.Errorf("Expected %s, got %s", nil, err)
+		t.Errorf("Expected %v, got %s", nil, err)
 	}
 
 	expected := "file:3: line is 4 characters\n"
@@ -62,7 +62,7 @@ func TestProcessFile(t *testing.T) {
 	b := bytes.NewBufferString("")
 	err := lll.ProcessFile(b, "lll_test.go", 80, 1, nil)
 	if err != nil {
-		t.Errorf("Expected %s, got %s", nil, err)
+		t.Errorf("Expected %v, got %s", nil, err)
 	}
 }
 
