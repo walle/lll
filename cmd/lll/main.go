@@ -16,6 +16,7 @@ var args struct {
 	MaxLength int      `arg:"-l,env,help:max line length to check for"`
 	TabWidth  int      `arg:"-w,env,help:tab width in spaces"`
 	GoOnly    bool     `arg:"-g,env,help:only check .go files"`
+	SkipTests bool     `arg:"-t,env,help:skip _test.go files"`
 	Input     []string `arg:"positional"`
 	SkipList  []string `arg:"-s,env,help:list of dirs to skip"`
 	Vendor    bool     `arg:"env,help:check files in vendor directory"`
@@ -72,7 +73,7 @@ func main() {
 				fmt.Fprintf(os.Stderr, "lll: %s\n", e)
 				return nil
 			}
-			skip, ret := lll.ShouldSkip(p, i.IsDir(), args.SkipList, args.GoOnly)
+			skip, ret := lll.ShouldSkip(p, i.IsDir(), args.SkipList, args.GoOnly, args.SkipTests)
 			if skip {
 				return ret
 			}
