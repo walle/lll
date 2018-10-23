@@ -20,7 +20,7 @@ import (
 // If GoOnly is supplied check that the file is a go file.
 // Otherwise check so the file is a "text file".
 func ShouldSkip(path string, isDir bool, skipList []string,
-	goOnly bool) (bool, error) {
+	goOnly bool, skipTests bool) (bool, error) {
 
 	name := filepath.Base(path)
 	for _, d := range skipList {
@@ -35,6 +35,9 @@ func ShouldSkip(path string, isDir bool, skipList []string,
 		return true, nil
 	}
 
+	if skipTests && !strings.HasSuffix(path, "_test.go") {
+		return true, nil
+	}
 	if goOnly {
 		if !strings.HasSuffix(path, ".go") {
 			return true, nil

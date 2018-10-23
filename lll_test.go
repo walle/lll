@@ -10,34 +10,39 @@ import (
 )
 
 func TestShouldSkipDirs(t *testing.T) {
-	skip, ret := lll.ShouldSkip(".git", true, []string{".git"}, false)
+	skip, ret := lll.ShouldSkip(".git", true, []string{".git"}, false, false)
 	if skip == false || ret != filepath.SkipDir {
 		t.Errorf("Expected %b, %s got. %b, %s", true, filepath.SkipDir, skip, ret)
 	}
 
-	skip, ret = lll.ShouldSkip("dir", true, []string{".git"}, false)
+	skip, ret = lll.ShouldSkip("dir", true, []string{".git"}, false, false)
 	if skip == false || ret != nil {
 		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
 	}
 }
 
 func TestShouldSkipFiles(t *testing.T) {
-	skip, ret := lll.ShouldSkip("file.go", false, []string{".git"}, true)
+	skip, ret := lll.ShouldSkip("file.go", false, []string{".git"}, true, false)
 	if skip == true || ret != nil {
 		t.Errorf("Expected %b, %s got. %b, %s", false, nil, skip, ret)
 	}
 
-	skip, ret = lll.ShouldSkip("file", false, []string{".git"}, true)
+	skip, ret = lll.ShouldSkip("file", false, []string{".git"}, true, false)
 	if skip == false || ret != nil {
 		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
 	}
 
-	skip, ret = lll.ShouldSkip("lll_test.go", false, []string{".git"}, false)
+	skip, ret = lll.ShouldSkip("lll_test.go", false, []string{".git"}, false, false)
 	if skip == true || ret != nil {
 		t.Errorf("Expected %b, %s got. %b, %s", false, nil, skip, ret)
 	}
 
-	skip, ret = lll.ShouldSkip("file", false, []string{"file"}, false)
+	skip, ret = lll.ShouldSkip("lll_test.go", false, []string{".git"}, true, true)
+	if skip == false || ret != nil {
+		t.Errorf("Expected %b, %s got. %b, %s", false, nil, skip, ret)
+	}
+
+	skip, ret = lll.ShouldSkip("file", false, []string{"file"}, false, false)
 	if skip == false || ret != nil {
 		t.Errorf("Expected %b, %s got. %b, %s", true, nil, skip, ret)
 	}
