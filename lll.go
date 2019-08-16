@@ -96,9 +96,5 @@ func Process(r io.Reader, w io.Writer, path string, maxLength, tabWidth int,
 		}
 	}
 
-	if err := s.Err(); err != nil {
-		return err
-	}
-
-	return nil
+	return s.Err()
 }
