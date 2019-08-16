@@ -11,62 +11,62 @@ import (
 )
 
 func TestShouldSkipDirs(t *testing.T) {
-	skip, ret := lll.ShouldSkip(".git", true, []string{".git"}, false, false)
-	if skip == false || ret != filepath.SkipDir {
-		t.Errorf("Expected %t, %s got. %t, %s", true, filepath.SkipDir, skip, ret)
+	skip, err := lll.ShouldSkip(".git", true, []string{".git"}, false, false)
+	if skip == false || err != filepath.SkipDir {
+		t.Errorf("Expected %t, %s got. %t, %s", true, filepath.SkipDir, skip, err)
 	}
 
-	skip, ret = lll.ShouldSkip("dir", true, []string{".git"}, false, false)
-	if skip == false || ret != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
+	skip, err = lll.ShouldSkip("dir", true, []string{".git"}, false, false)
+	if skip == false || err != nil {
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
 	}
 }
 
 func TestShouldSkipFiles(t *testing.T) {
-	skip, ret := lll.ShouldSkip("lll.go", false, []string{".git"}, true, false)
-	if skip == true || ret != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", false, nil, skip, ret)
+	skip, err := lll.ShouldSkip("lll.go", false, []string{".git"}, true, false)
+	if skip == true || err != nil {
+		t.Errorf("Expected %t, %v got. %t, %s", false, nil, skip, err)
 	}
 
-	skip, ret = lll.ShouldSkip("README.md", false, []string{".git"}, true, false)
-	if skip == false || ret != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
+	skip, err = lll.ShouldSkip("README.md", false, []string{".git"}, true, false)
+	if skip == false || err != nil {
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
 	}
 
-	skip, ret = lll.ShouldSkip("README.md", false, []string{".git"}, false, false)
-	if skip == true || ret != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
+	skip, err = lll.ShouldSkip("README.md", false, []string{".git"}, false, false)
+	if skip == true || err != nil {
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
 	}
 
-	skip, ret = lll.ShouldSkip("lll_test.go", false, []string{".git"}, false, false)
-	if skip == true || ret != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", false, nil, skip, ret)
+	skip, err = lll.ShouldSkip("lll_test.go", false, []string{".git"}, false, false)
+	if skip == true || err != nil {
+		t.Errorf("Expected %t, %v got. %t, %s", false, nil, skip, err)
 	}
 
-	skip, ret = lll.ShouldSkip("lll_test.go", false, []string{".git"}, true, true)
-	if skip == true || ret != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
+	skip, err = lll.ShouldSkip("lll_test.go", false, []string{".git"}, true, true)
+	if skip == true || err != nil {
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
 	}
 
-	skip, ret = lll.ShouldSkip("file", false, []string{"file"}, false, false)
-	if skip == false || ret != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
+	skip, err = lll.ShouldSkip("file", false, []string{"file"}, false, false)
+	if skip == false || err != nil {
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
 	}
 
-	skip, ret = lll.ShouldSkip("file", false, []string{}, false, false)
-	if skip == false || ret == nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
+	skip, err = lll.ShouldSkip("file", false, []string{}, false, false)
+	if skip == false || err == nil {
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
 	}
 
 	binaryFilePath, _ := os.Executable()
-	skip, ret = lll.ShouldSkip(binaryFilePath, false, []string{".git"}, false, false)
-	if skip == false || ret != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
+	skip, err = lll.ShouldSkip(binaryFilePath, false, []string{".git"}, false, false)
+	if skip == false || err != nil {
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
 	}
 
-	skip, ret = lll.ShouldSkip("generated_test.go", false, []string{".git"}, true, false)
-	if skip == false || ret != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, ret)
+	skip, err = lll.ShouldSkip("generated_test.go", false, []string{".git"}, true, false)
+	if skip == false || err != nil {
+		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
 	}
 }
 
