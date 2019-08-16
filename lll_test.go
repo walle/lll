@@ -23,51 +23,57 @@ func TestShouldSkipDirs(t *testing.T) {
 }
 
 func TestShouldSkipFiles(t *testing.T) {
-	skip, err := lll.ShouldSkip("lll.go", false, []string{".git"}, true, false)
-	if skip == true || err != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", false, nil, skip, err)
-	}
+	t.Run("regular files", func(t *testing.T) {
+		binaryFilePath, _ := os.Executable()
+		tests := []struct {
+			path      string
+			goOnly    bool
+			skipTests bool
 
-	skip, err = lll.ShouldSkip("README.md", false, []string{".git"}, true, false)
-	if skip == false || err != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
-	}
+			shouldSkip bool
+			err        error
+		}{
+			{path: "lll.go", goOnly: false, skipTests: false, shouldSkip: false},
+			{path: "lll.go", goOnly: true, skipTests: false, shouldSkip: false},
+			{path: "lll.go", goOnly: false, skipTests: true, shouldSkip: false},
+			{path: "lll.go", goOnly: true, skipTests: true, shouldSkip: false},
+			{path: "README.md", goOnly: false, skipTests: false, shouldSkip: false},
+			{path: "README.md", goOnly: true, skipTests: false, shouldSkip: true},
+			{path: "README.md", goOnly: false, skipTests: true, shouldSkip: false},
+			{path: "README.md", goOnly: true, skipTests: true, shouldSkip: true},
+			{path: "lll_test.go", goOnly: false, skipTests: false, shouldSkip: false},
+			{path: "lll_test.go", goOnly: true, skipTests: false, shouldSkip: false},
+			{path: "lll_test.go", goOnly: false, skipTests: true, shouldSkip: true},
+			{path: "lll_test.go", goOnly: true, skipTests: true, shouldSkip: true},
+			{path: binaryFilePath, goOnly: false, skipTests: false, shouldSkip: true},
+			{path: binaryFilePath, goOnly: true, skipTests: false, shouldSkip: true},
+			{path: binaryFilePath, goOnly: false, skipTests: true, shouldSkip: true},
+			{path: binaryFilePath, goOnly: true, skipTests: true, shouldSkip: true},
+			{path: "generated_test.go", goOnly: false, skipTests: false, shouldSkip: true},
+			{path: "generated_test.go", goOnly: true, skipTests: false, shouldSkip: true},
+			{path: "generated_test.go", goOnly: false, skipTests: true, shouldSkip: true},
+			{path: "generated_test.go", goOnly: true, skipTests: true, shouldSkip: true},
+		}
 
-	skip, err = lll.ShouldSkip("README.md", false, []string{".git"}, false, false)
-	if skip == true || err != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
-	}
-
-	skip, err = lll.ShouldSkip("lll_test.go", false, []string{".git"}, false, false)
-	if skip == true || err != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", false, nil, skip, err)
-	}
-
-	skip, err = lll.ShouldSkip("lll_test.go", false, []string{".git"}, true, true)
-	if skip == true || err != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
-	}
-
-	skip, err = lll.ShouldSkip("file", false, []string{"file"}, false, false)
-	if skip == false || err != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
-	}
-
-	skip, err = lll.ShouldSkip("file", false, []string{}, false, false)
-	if skip == false || err == nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
-	}
-
-	binaryFilePath, _ := os.Executable()
-	skip, err = lll.ShouldSkip(binaryFilePath, false, []string{".git"}, false, false)
-	if skip == false || err != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
-	}
-
-	skip, err = lll.ShouldSkip("generated_test.go", false, []string{".git"}, true, false)
-	if skip == false || err != nil {
-		t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
-	}
+		for i, tc := range tests {
+			skip, err := lll.ShouldSkip(tc.path, false, []string{".git"}, tc.goOnly, tc.skipTests)
+			if skip != tc.shouldSkip || err != tc.err {
+				t.Errorf("%d) Expected %t, %v got %t, %s", i+1, tc.shouldSkip, tc.err, skip, err)
+			}
+		}
+	})
+	t.Run("file in skiplist", func(t *testing.T) {
+		skip, err := lll.ShouldSkip("file", false, []string{"file"}, false, false)
+		if skip != true || err != nil {
+			t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
+		}
+	})
+	t.Run("error on file not found", func(t *testing.T) {
+		skip, err := lll.ShouldSkip("file", false, []string{".git"}, false, false)
+		if skip != true || err == nil {
+			t.Errorf("Expected %t, %v got. %t, %s", true, nil, skip, err)
+		}
+	})
 }
 
 func TestProcess(t *testing.T) {

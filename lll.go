@@ -35,11 +35,11 @@ func ShouldSkip(path string, isDir bool, skipList []string,
 		return true, nil
 	}
 
-	isGo := strings.HasSuffix(path, ".go")
-	if goOnly && !isGo {
+	if skipTests && strings.HasSuffix(path, "_test.go") {
 		return true, nil
 	}
-	if skipTests && !strings.HasSuffix(path, "_test.go") {
+	isGo := strings.HasSuffix(path, ".go")
+	if goOnly && !isGo {
 		return true, nil
 	}
 	b, err := ioutil.ReadFile(path)
