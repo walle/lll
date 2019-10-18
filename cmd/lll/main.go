@@ -13,19 +13,21 @@ import (
 )
 
 var args struct {
-	MaxLength int      `arg:"-l,env,help:max line length to check for"`
-	TabWidth  int      `arg:"-w,env,help:tab width in spaces"`
-	GoOnly    bool     `arg:"-g,env,help:only check .go files"`
-	SkipTests bool     `arg:"-t,env,help:skip _test.go files"`
-	Input     []string `arg:"positional"`
-	SkipList  []string `arg:"-s,env,help:list of dirs to skip"`
-	Vendor    bool     `arg:"env,help:check files in vendor directory"`
-	Files     bool     `arg:"help:read file names from stdin one at each line"`
-	Exclude   string   `arg:"-e,env,help:exclude lines that matches this regex"`
+	MaxLength        int      `arg:"-l,env,help:max line length to check for"`
+	MaxCommentLength int      `arg:"-l,env,help:max line length to check for for comment lines"`
+	TabWidth         int      `arg:"-w,env,help:tab width in spaces"`
+	GoOnly           bool     `arg:"-g,env,help:only check .go files"`
+	SkipTests        bool     `arg:"-t,env,help:skip _test.go files"`
+	Input            []string `arg:"positional"`
+	SkipList         []string `arg:"-s,env,help:list of dirs to skip"`
+	Vendor           bool     `arg:"env,help:check files in vendor directory"`
+	Files            bool     `arg:"help:read file names from stdin one at each line"`
+	Exclude          string   `arg:"-e,env,help:exclude lines that matches this regex"`
 }
 
 func main() {
 	args.MaxLength = 80
+	args.MaxCommentLength = 80
 	args.TabWidth = 1
 	args.SkipList = []string{".git", "vendor"}
 	arg.MustParse(&args)
@@ -40,7 +42,8 @@ func main() {
 		exclude = e
 	}
 
-	// If we should include the vendor dir, attempt to remove it from the skip list
+	// If we should include the vendor dir, attempt to remove it from
+	// the skip list.
 	if args.Vendor {
 		for i, p := range args.SkipList {
 			if p == "vendor" {
@@ -54,7 +57,7 @@ func main() {
 		s := bufio.NewScanner(os.Stdin)
 		for s.Scan() {
 			err := lll.ProcessFile(os.Stdout, s.Text(),
-				args.MaxLength, args.TabWidth, exclude)
+				args.MaxLength, args.MaxCommentLength, args.TabWidth, exclude)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error processing file: %s\n", err)
 			}
@@ -73,12 +76,15 @@ func main() {
 				fmt.Fprintf(os.Stderr, "lll: %s\n", e)
 				return nil
 			}
-			skip, ret := lll.ShouldSkip(p, i.IsDir(), args.SkipList, args.GoOnly, args.SkipTests)
+			skip, ret := lll.ShouldSkip(
+				p, i.IsDir(), args.SkipList, args.GoOnly, args.SkipTests)
 			if skip {
 				return ret
 			}
 
-			err := lll.ProcessFile(os.Stdout, p, args.MaxLength, args.TabWidth, exclude)
+			err := lll.ProcessFile(
+				os.Stdout, p, args.MaxLength, args.MaxCommentLength,
+				args.TabWidth, exclude)
 			return err
 		})
 
