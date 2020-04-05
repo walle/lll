@@ -14,7 +14,7 @@ import (
 
 var args struct {
 	MaxLength        int      `arg:"-l,env,help:max line length to check for"`
-	MaxCommentLength int      `arg:"-l,env,help:max line length to check for for comment lines"`
+	MaxCommentLength int      `arg:"-c,env,help:max line length to check for for comment lines"`
 	TabWidth         int      `arg:"-w,env,help:tab width in spaces"`
 	GoOnly           bool     `arg:"-g,env,help:only check .go files"`
 	SkipTests        bool     `arg:"-t,env,help:skip _test.go files"`
