@@ -15,7 +15,25 @@ func TestIsGenerated(t *testing.T) {
 	for _, c := range cases {
 		isGenerated := isGenerated(c.fileContents)
 		if isGenerated != c.generated {
-			t.Errorf("expected %t, got %t", isGenerated, c.generated)
+			t.Errorf("expected %t, got %t", c.generated, isGenerated)
+		}
+	}
+}
+
+func TestHasComment(t *testing.T) {
+	cases := []struct {
+		line    string
+		comment bool
+	}{
+		{"// comment line", true},
+		{"\t\t// comment line", true},
+		{"//+build line not considered a comment", false},
+		{"\tcomment at end // of line", false},
+	}
+	for _, c := range cases {
+		isComment := isComment(c.line)
+		if isComment != c.comment {
+			t.Errorf("expected %t, got %t", c.comment, isComment)
 		}
 	}
 }

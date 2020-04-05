@@ -3,6 +3,7 @@ package lll
 import (
 	"bufio"
 	"bytes"
+	"strings"
 )
 
 var (
@@ -21,4 +22,11 @@ func isGenerated(src []byte) bool {
 		}
 	}
 	return false
+}
+
+// isComment reports whether a given line of input is a comment line.
+// It does this by checking if the line starts with `//` (excluding tabs).
+func isComment(line string) bool {
+	trimmedLine := strings.TrimSpace(line)
+	return strings.HasPrefix(trimmedLine, "// ")
 }

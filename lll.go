@@ -57,9 +57,11 @@ func ShouldSkip(path string, isDir bool, skipList []string,
 }
 
 // ProcessFile checks all lines in the file and writes an error if the line
-// length is greater than MaxLength.
-func ProcessFile(w io.Writer, path string, maxLength, tabWidth int,
-	exclude *regexp.Regexp) error {
+// length is greater than maxLength.  If the line is a comment line, it
+// writes an error if the line length is greater than maxLength *or*
+// maxCommentLength.
+func ProcessFile(w io.Writer, path string,
+	maxLength, maxCommentLength, tabWidth int, exclude *regexp.Regexp) error {
 	f, err := os.Open(path)
 	if err != nil {
 		return err
@@ -71,13 +73,15 @@ func ProcessFile(w io.Writer, path string, maxLength, tabWidth int,
 		}
 	}()
 
-	return Process(f, w, path, maxLength, tabWidth, exclude)
+	return Process(f, w, path, maxLength, maxCommentLength, tabWidth, exclude)
 }
 
-// Process checks all lines in the reader and writes an error if the line length
-// is greater than MaxLength.
-func Process(r io.Reader, w io.Writer, path string, maxLength, tabWidth int,
-	exclude *regexp.Regexp) error {
+// Process checks all lines in the reader and writes an error if the line
+// length is greater than MaxLength.  If the line is a comment line, it
+// writes an error if the line length is greater than maxLength *or*
+// maxCommentLength.
+func Process(r io.Reader, w io.Writer, path string,
+	maxLength, maxCommentLength, tabWidth int, exclude *regexp.Regexp) error {
 	spaces := strings.Repeat(" ", tabWidth)
 	l := 0
 	s := bufio.NewScanner(r)
@@ -86,11 +90,10 @@ func Process(r io.Reader, w io.Writer, path string, maxLength, tabWidth int,
 		t := s.Text()
 		t = strings.Replace(t, "\t", spaces, -1)
 		c := utf8.RuneCountInString(t)
-		if c > maxLength {
-			if exclude != nil {
-				if exclude.MatchString(t) {
-					continue
-				}
+
+		if c > maxLength || (c > maxCommentLength && isComment(t)) {
+			if exclude != nil && exclude.MatchString(t) {
+				continue
 			}
 			fmt.Fprintf(w, "%s:%d: line is %d characters\n", path, l, c)
 		}
