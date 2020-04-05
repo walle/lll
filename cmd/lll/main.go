@@ -27,7 +27,7 @@ var args struct {
 
 func main() {
 	args.MaxLength = 80
-	args.MaxCommentLength = 80
+	args.MaxCommentLength = args.MaxLength
 	args.TabWidth = 1
 	args.SkipList = []string{".git", "vendor"}
 	arg.MustParse(&args)
