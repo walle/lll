@@ -11,7 +11,7 @@ feature request. Tag the issue accordingly.
 
 1. Install as usual (`go get github.com/walle/lll`)
 2. Write code and tests for your new feature
-3. Ensure everything works and the tests pass (see below)
+3. Ensure everything works, and the tests pass (see below)
 4. Consider contributing your code upstream
 
 ### Contribute upstream
@@ -23,7 +23,7 @@ feature request. Tag the issue accordingly.
 5. Write code and tests for your new feature
 6. Rebase against upstream to get changes \
 (`git fetch origin && git rebase origin/master`)
-7. Ensure everything works and the tests pass (see below)
+7. Ensure everything works, and the tests pass (see below)
 8. Commit your changes
 9. Push the branch to github (`git push fork my-new-feature`)
 10. Create a new Pull Request on GitHub

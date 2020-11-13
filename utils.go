@@ -3,11 +3,13 @@ package lll
 import (
 	"bufio"
 	"bytes"
+	"strings"
 )
 
 var (
-	genHdr = []byte("// Code generated ")
-	genFtr = []byte(" DO NOT EDIT.")
+	genHdr           = []byte("// Code generated ")
+	genFtr           = []byte(" DO NOT EDIT.")
+	goGeneratePrefix = "//go:generate "
 )
 
 // isGenerated reports whether the source file is generated code
@@ -21,4 +23,10 @@ func isGenerated(src []byte) bool {
 		}
 	}
 	return false
+}
+
+// isGoGenerate reports whether the code line is "go generate" directive
+// https://github.com/golang/go/blob/master/src/cmd/go/internal/generate/generate.go#L324
+func isGoGenerate(line string) bool {
+	return strings.HasPrefix(line, goGeneratePrefix)
 }
