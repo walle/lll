@@ -10,6 +10,9 @@ import (
 	"github.com/walle/lll"
 )
 
+// Long directive example, tested by TestProcessFile
+//go:generate mockgen --build_flags=-mod=mod -destination mocks/mocks.go -package scoringmocks . IGGStorage,IEventsStorage
+
 func TestShouldSkipDirs(t *testing.T) {
 	skip, err := lll.ShouldSkip(".git", true, []string{".git"}, false, false)
 	if skip == false || err != filepath.SkipDir {
@@ -93,9 +96,12 @@ func TestProcess(t *testing.T) {
 
 func TestProcessFile(t *testing.T) {
 	b := bytes.NewBufferString("")
-	err := lll.ProcessFile(b, "lll_test.go", 80, 1, nil)
+	err := lll.ProcessFile(b, "lll_test.go", 100, 1, nil)
 	if err != nil {
 		t.Errorf("Expected %v, got %s", nil, err)
+	}
+	if b.Len() > 0 {
+		t.Errorf(`Unexpected issues in "lll_test.go": %v`, b.String())
 	}
 }
 

@@ -85,6 +85,9 @@ func Process(r io.Reader, w io.Writer, path string, maxLength, tabWidth int,
 		l++
 		t := s.Text()
 		t = strings.Replace(t, "\t", spaces, -1)
+		if isGoGenerate(t) {
+			continue
+		}
 		c := utf8.RuneCountInString(t)
 		if c > maxLength {
 			if exclude != nil {
