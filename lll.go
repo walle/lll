@@ -3,6 +3,7 @@ package lll
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -78,19 +79,15 @@ func ProcessFile(w io.Writer, path string, maxLength, tabWidth int,
 // is greater than MaxLength.
 func Process(r io.Reader, w io.Writer, path string, maxLength, tabWidth int,
 	exclude *regexp.Regexp) error {
-	spaces := strings.Repeat(" ", tabWidth)
 	l := 0
 	s := bufio.NewScanner(r)
 	for s.Scan() {
 		l++
-		t := s.Text()
-		t = strings.Replace(t, "\t", spaces, -1)
-		c := utf8.RuneCountInString(t)
+		tabsCount := bytes.Count(s.Bytes(), []byte{'\t'})
+		c := utf8.RuneCount(s.Bytes()) + tabsCount*tabWidth - tabsCount
 		if c > maxLength {
-			if exclude != nil {
-				if exclude.MatchString(t) {
-					continue
-				}
+			if exclude != nil && exclude.Match(s.Bytes()) {
+				continue
 			}
 			fmt.Fprintf(w, "%s:%d: line is %d characters\n", path, l, c)
 		}
